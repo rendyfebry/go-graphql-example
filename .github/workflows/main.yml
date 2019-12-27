@@ -1,0 +1,53 @@
+name: main-action
+
+on: [push, pull_request]
+
+jobs:
+  automated-test:
+    name: Automated Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install Go 1.12
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.12
+        id: go
+
+      - name: Checkout Code
+        uses: actions/checkout@v1
+
+      - name: Setup Go Directories
+        run: |
+          export GOPATH=$HOME/go
+          export GOBIN=$(go env GOPATH)/bin
+          mkdir -p $GOPATH/pkg
+          mkdir -p $GOBIN
+
+          mkdir -p $GOPATH/src/github.com/$GITHUB_REPOSITORY
+          mv $(pwd)/* $GOPATH/src/github.com/$GITHUB_REPOSITORY
+
+          echo ::set-env name=GOPATH::$GOPATH
+          echo ::set-env name=GOBIN::$GOBIN
+
+      - name: Install Dependencies
+        run: |
+          cd $GOPATH/src/github.com/$GITHUB_REPOSITORY
+
+          export PATH=$PATH:$GOPATH
+          export PATH=$PATH:$GOBIN
+
+          git config --global url."https://${MY_GITHUB_TOKEN}@github.com/".insteadOf "https://github.com/"
+
+          curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+          dep ensure -v
+
+      - name: Run Unit Test
+        run: |
+          cd $GOPATH/src/github.com/$GITHUB_REPOSITORY
+          go test -v ./... -coverprofile=coverage.out
+
+      - name: Run Coverage
+        run: |
+          cd $GOPATH/src/github.com/$GITHUB_REPOSITORY
+          go tool cover -func=coverage.out
