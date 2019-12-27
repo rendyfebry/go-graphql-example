@@ -32,3 +32,11 @@
 [[constraint]]
   name = "github.com/stretchr/testify"
   version = "1.4.0"
+
+[[constraint]]
+  name = "github.com/graphql-go/graphql"
+  version = "0.7.8"
+
+[[constraint]]
+  name = "github.com/gorilla/mux"
+  version = "1.7.3"
