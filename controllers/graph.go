@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/rendyfebry/go-graphql-example/internal/utils"
 	gqlRepo "github.com/rendyfebry/go-graphql-example/repository/graphql"
 
 	"github.com/graphql-go/graphql"
@@ -16,7 +17,7 @@ import (
 func GraphQLHandler(w http.ResponseWriter, r *http.Request) {
 	buf, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		utils.SendJSONResponse(w, http.StatusInternalServerError, err.Error(), nil)
 		return
 	}
 
@@ -27,9 +28,7 @@ func GraphQLHandler(w http.ResponseWriter, r *http.Request) {
 
 	var apolloQuery map[string]interface{}
 	if err := json.Unmarshal(buf, &apolloQuery); err != nil {
-		fmt.Println(err)
-		fmt.Println("Error on Unmarshalling!!!")
-		w.WriteHeader(http.StatusUnprocessableEntity)
+		utils.SendJSONResponse(w, http.StatusUnprocessableEntity, "Error on Unmarshalling!!!", nil)
 		return
 	}
 
@@ -39,15 +38,10 @@ func GraphQLHandler(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if len(result.Errors) > 0 {
-		fmt.Println(fmt.Sprintf("wrong result, unexpected errors: %v", result.Errors))
-	}
-
-	resultByte, err := json.Marshal(result)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		utils.SendJSONResponse(w, http.StatusBadRequest, fmt.Sprintf("wrong result, unexpected errors: %v", result.Errors), nil)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(resultByte)
+	utils.SendJSONResponse(w, 0, "Success", result.Data)
+	return
 }
