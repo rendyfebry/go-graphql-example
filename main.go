@@ -1,59 +1,27 @@
 package main
 
 import (
-	"encoding/json"
+	"flag"
 	"fmt"
-	"io"
-	"io/ioutil"
 	"net/http"
+	"os"
 
-	gqlRepo "github.com/rendyfebry/go-graphql-example/repository/graphql"
-
-	"github.com/graphql-go/graphql"
+	"github.com/gorilla/handlers"
+	"github.com/gorilla/mux"
+	"github.com/rendyfebry/go-graphql-example/controllers"
 )
 
-// GraphQLHandler ...
-func GraphQLHandler(w http.ResponseWriter, r *http.Request) {
-	buf, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	defer func() {
-		io.Copy(ioutil.Discard, r.Body)
-		r.Body.Close()
-	}()
-
-	var apolloQuery map[string]interface{}
-	if err := json.Unmarshal(buf, &apolloQuery); err != nil {
-		fmt.Println(err)
-		fmt.Println("Error on Unmarshalling!!!")
-		w.WriteHeader(http.StatusUnprocessableEntity)
-		return
-	}
-
-	result := graphql.Do(graphql.Params{
-		Schema:        gqlRepo.UserSchema,
-		RequestString: apolloQuery["query"].(string),
-	})
-
-	if len(result.Errors) > 0 {
-		fmt.Println(fmt.Sprintf("wrong result, unexpected errors: %v", result.Errors))
-	}
-
-	resultByte, err := json.Marshal(result)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(resultByte)
-}
-
 func main() {
-	http.HandleFunc("/graphql", GraphQLHandler)
-	fmt.Println("Now server is running on port 8080")
-	http.ListenAndServe(":8080", nil)
+	var port = flag.String("p", "8080", "Server port")
+	flag.Parse()
+
+	fmt.Println(fmt.Sprintf("Server listening on: %s", *port))
+
+	r := mux.NewRouter().StrictSlash(true)
+	r.Methods("POST").
+		Path("/graphql").
+		HandlerFunc(controllers.GraphQLHandler)
+
+	loggedRouter := handlers.LoggingHandler(os.Stdout, r)
+	http.ListenAndServe(fmt.Sprintf(":%s", *port), loggedRouter)
 }
