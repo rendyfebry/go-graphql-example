@@ -8,16 +8,34 @@ import (
 type User struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
+	Age  int    `json:"age"`
 }
 
 var data = []*User{
 	&User{
 		ID:   "1",
-		Name: "Rendy",
+		Name: "Veronika Kinney",
+		Age:  28,
 	},
 	&User{
 		ID:   "2",
-		Name: "Febry",
+		Name: "Clark Millington",
+		Age:  33,
+	},
+	&User{
+		ID:   "3",
+		Name: "Artur Henderson",
+		Age:  25,
+	},
+	&User{
+		ID:   "4",
+		Name: "Zaynah Mcdonnell",
+		Age:  18,
+	},
+	&User{
+		ID:   "5",
+		Name: "Milo Hopper",
+		Age:  38,
 	},
 }
 
@@ -30,6 +48,9 @@ var userType = graphql.NewObject(
 			},
 			"name": &graphql.Field{
 				Type: graphql.String,
+			},
+			"age": &graphql.Field{
+				Type: graphql.Int,
 			},
 		},
 	},
