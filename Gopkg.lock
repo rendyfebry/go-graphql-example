@@ -2,20 +2,15 @@
 
 
 [[projects]]
-  digest = "1:b117faf01abdbdadd7b8ceeae74cd1369c1b073fef41aee8b674c9d704a54c16"
-  name = "github.com/gorilla/handlers"
-  packages = ["."]
+  digest = "1:58c033da727ebd5a6769209e479cac9a6e4dab53c879631af3d8161423099d57"
+  name = "github.com/go-chi/chi"
+  packages = [
+    ".",
+    "middleware",
+  ]
   pruneopts = "UT"
-  revision = "8a3748addc242fc560bd6d4ff28b0374c010b1b4"
-  version = "v1.4.2"
-
-[[projects]]
-  digest = "1:cbec35fe4d5a4fba369a656a8cd65e244ea2c743007d8f6c1ccb132acf9d1296"
-  name = "github.com/gorilla/mux"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "00bdffe0f3c77e27d2cf6f5c70232a2d3e4d9c15"
-  version = "v1.7.3"
+  revision = "da24bba8dcd4021cafac38724bf10dccc97c3e36"
+  version = "v4.0.2"
 
 [[projects]]
   digest = "1:7fbb40f65374cb64a7bf3f1f74e2cb4c4437d93bc3d8921cf7e3d7ad2ab20989"
@@ -41,8 +36,8 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
-    "github.com/gorilla/handlers",
-    "github.com/gorilla/mux",
+    "github.com/go-chi/chi",
+    "github.com/go-chi/chi/middleware",
     "github.com/graphql-go/graphql",
   ]
   solver-name = "gps-cdcl"

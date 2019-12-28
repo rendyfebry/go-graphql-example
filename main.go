@@ -4,10 +4,9 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
-	"os"
 
-	"github.com/gorilla/handlers"
-	"github.com/gorilla/mux"
+	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
 	"github.com/rendyfebry/go-graphql-example/controllers"
 )
 
@@ -17,11 +16,14 @@ func main() {
 
 	fmt.Println(fmt.Sprintf("Server listening on: %s", *port))
 
-	r := mux.NewRouter().StrictSlash(true)
-	r.Methods("POST").
-		Path("/graphql").
-		HandlerFunc(controllers.GraphQLHandler)
+	r := chi.NewRouter()
 
-	loggedRouter := handlers.LoggingHandler(os.Stdout, r)
-	http.ListenAndServe(fmt.Sprintf(":%s", *port), loggedRouter)
+	// A good base middleware stack
+	r.Use(middleware.RequestID)
+	r.Use(middleware.RealIP)
+	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
+
+	r.Post("/graphql", controllers.GraphQLHandler)
+	http.ListenAndServe(fmt.Sprintf(":%s", *port), r)
 }
