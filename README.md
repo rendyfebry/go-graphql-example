@@ -23,6 +23,12 @@ dep ensure -v
 go run main.go
 ```
 
+```
+curl --location --request POST 'http://localhost:8080/graphql' \
+  --header 'Content-Type: application/graphql' \
+  --data-raw '{"query":"query{user(id: 1){id,name,age}}","variables":1}'
+```
+
 # Test
 
 ```
