@@ -6,34 +6,34 @@ import (
 
 // User struct
 type User struct {
-	ID   string `json:"id"`
+	ID   int    `json:"id"`
 	Name string `json:"name"`
 	Age  int    `json:"age"`
 }
 
 var data = []*User{
 	&User{
-		ID:   "1",
+		ID:   1,
 		Name: "Veronika Kinney",
 		Age:  28,
 	},
 	&User{
-		ID:   "2",
+		ID:   2,
 		Name: "Clark Millington",
 		Age:  33,
 	},
 	&User{
-		ID:   "3",
+		ID:   3,
 		Name: "Artur Henderson",
 		Age:  25,
 	},
 	&User{
-		ID:   "4",
+		ID:   4,
 		Name: "Zaynah Mcdonnell",
 		Age:  18,
 	},
 	&User{
-		ID:   "5",
+		ID:   5,
 		Name: "Milo Hopper",
 		Age:  38,
 	},
@@ -44,7 +44,7 @@ var userType = graphql.NewObject(
 		Name: "User",
 		Fields: graphql.Fields{
 			"id": &graphql.Field{
-				Type: graphql.String,
+				Type: graphql.Int,
 			},
 			"name": &graphql.Field{
 				Type: graphql.String,
@@ -64,11 +64,11 @@ var queryType = graphql.NewObject(
 				Type: userType,
 				Args: graphql.FieldConfigArgument{
 					"id": &graphql.ArgumentConfig{
-						Type: graphql.String,
+						Type: graphql.Int,
 					},
 				},
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					idQuery, _ := p.Args["id"].(string)
+					idQuery, _ := p.Args["id"].(int)
 
 					filtered := filterByID(data, idQuery)
 
@@ -82,7 +82,7 @@ var queryType = graphql.NewObject(
 		},
 	})
 
-func filterByID(fu []*User, id string) (out []*User) {
+func filterByID(fu []*User, id int) (out []*User) {
 	for _, u := range fu {
 		if u.ID == id {
 			out = append(out, u)
